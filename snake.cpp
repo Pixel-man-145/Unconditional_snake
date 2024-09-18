@@ -2,182 +2,192 @@
 #include <windows.h>
 
 bool invent(bool a) {                       //инвентирование
-	return (a * -1 + 1);
+	return (a*-1+1);
 }
 bool myor(bool a, bool b) {                 //или
 	return invent(invent(a) * invent(b));
 }
-bool check_zero(short a) {                  //проверка на ноль
-	unsigned int e1 = 0;
-	unsigned int e2 = 0;
-	e1 = (a * a + 1) / 1;
-	e2 = 1 / (a * a + 1);
-	return e1 * e2;
+bool check_zero(int a) {                  	//проверка на ноль
+	return int((a*a+1)/1) * int(1/(a*a+1));
 }
-bool equals(short a, short b) {             //проверка на равенство
-	unsigned int e1 = 0;
-	unsigned int e2 = 0;
-	e1 = (a + (a * a + b * b + 1)) / (b + (a * a + b * b + 1));
-	e2 = (b + (a * a + b * b + 1)) / (a + (a * a + b * b + 1));
-	return e1 * e2;
+bool equals(int a, int b) {             	//проверка на равенство
+	return int((a+(a*a+b*b+1))/(b+(a*a+b*b+1))) * int((b+(a*a+b*b+1))/(a+(a*a+b*b+1)));
 }
-bool more(short a, short b) {               //проверка на больше, в случае равенства возвращает 0
-	unsigned int e1 = 0;
-	e1 = (b + (a * a + b * b + 1)) / (a + (a * a + b * b + 1));
-	return check_zero(e1);
+bool more(int a, int b) {               	//проверка на больше, в случае равенства возвращает 0
+	return check_zero(int((b+(a*a+b*b+1))/(a+(a*a+b*b+1))));
 }
-bool less(short a, short b) {               //проверка на меньше, в случае равенства возвращает 0
-	unsigned int e1 = 0;
-	e1 = (a + (a * a + b * b + 1)) / (b + (a * a + b * b + 1));
-	return check_zero(e1);
+bool less(int a, int b) {               	//проверка на меньше, в случае равенства возвращает 0
+	return check_zero(int((a+(a*a+b*b+1))/(b+(a*a+b*b+1))));
 }
-unsigned int order = 0;
+int order = 0;				//этап цикла
 
-void assignment(short* a, short b, unsigned int c) {       	//присваивание нового значения переменной A, значения B, во время этапа C
-	*a = ((*a) * (invent(equals(order, c)))) + (b * equals(order, c));
+template <typename Y, typename Z>
+void assignment(Y &a, Z b, int c) {			//присваивание нового значения переменной A, значения B, во время этапа C
+	a = (a * (invent(equals(order, c)))) + (b * equals(order, c));
 }
-void assignment(unsigned int* a, unsigned int b, unsigned int c) {       	//присваивание нового значения переменной A, значения B, во время этапа C
-	*a = ((*a) * (invent(equals(order, c)))) + (b * equals(order, c));
-}
-void assignment(bool* a, bool b, unsigned int c) {       	//присваивание нового значения переменной A, значения B, во время этапа C
-	*a = ((*a) * (invent(equals(order, c)))) + (b * equals(order, c));
-}
-void mywhile(bool a, unsigned int b, unsigned int c) {    				//цикл, который итерируется пока A правда, этап цикла B, во время этапа C
+void mywhile(bool a, int b, int c) {		//цикл, который итерируется пока A правда, этап цикла B, во время этапа C
 	order = (order * invent(myor(equals(order, b), equals(order, c)))) + ((b * a + c * invent(a)) * myor(equals(order, b), equals(order, c)));
 }
-void myif(bool a, unsigned int b, unsigned int c) {    				//условие, которое срабатывает если A правда, этап условия B, во время этапа C
+void myif(bool a, int b, int c) {			//условие, которое срабатывает если A правда, этап условия B, во время этапа C
 	order = (order * invent(equals(order, c))) + ((b * a + c * invent(a)) * equals(order, c));
 }
-void assignment(bool a, short* b, short c, unsigned int d) {	//присваивание нового значения переменной B, значения C, если A правда, во время этапа D
-	assignment(b, invent(a) * (*b) + a * c, d);
+template <typename Y, typename Z>
+void myminiif(bool a, Y &b, Z c, int d) {	//присваивание нового значения переменной B, значения C, если A правда, во время этапа D
+	assignment(b, invent(a) * b + a * c, d);
 }
-void assignment(bool a, bool* b, bool c, unsigned int d) {	//присваивание нового значения переменной B, значения C, если A правда, во время этапа D
-	assignment(b, invent(a) * (*b) + a * c, d);
-}
-char logo[322] = { ' ','/','@','@','@','@','@','\\',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','|','@','|',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','\n',
-					'|','@','|','\"','\"','\"','|','@','|',' ',' ','U','n','c','o','n','d','i','t','i','o','n','a','l',' ',' ',' ','|','@','|',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','\n',
-					' ','\\','@','\\',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','|','@','|',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','\n',
-					' ',' ','\"','@','@','@',',',' ',' ','|','@','|','/','@','@',',',' ',' ',' ',',','g','@','@','@','g',',',' ','|','@','|',' ',',','g','@','@','/',' ',',','g','\"','\"','\"','g',',',' ','\n',
-					' ',' ',' ',' ',' ','\\','@','\\',' ','|','@','@','@','@','@','@','\\',' ','"','"',' ',' ',' ','J','|','@','|','|','@','@','@','@','@','*','*',' ','/','@','L',',',',',',','J','@','\\','\n',
-					'|','@','|','_','_','_','|','@','|','|','@','@','/',' ','\\','@','@','|','/','@','P','\"','\"','\"','T','@','|','|','@','@','@','@','@','g',',',' ','\\','@','L',',','_','_','_',',',',','\n',
-					' ','\\','@','@','@','@','@','/',' ','|','@','|',' ',' ',' ','|','@','|','\\','@','L',',',',','J','\\','@','|','|','@','|',' ','\"','*','@','@','\\',' ','\"','*','@','@','@','*','\"',' ','\n' };
-short field[49][49] = {};
-short snakeX = 19;
-short snakeY = 24;
-bool direction0 = 1;
-bool direction1 = 0;
-short i = 0;
+short field[25][25] = {};	//поле
+short snakeX = 0;			//голова змеи
+short snakeY = 0;
+bool direction[]{0, 0};		//направление змеи
+short old = 0;				//возраст змеи
+short i = 0;				//для перечисления
 short j = 0;
-short apple = 0;
-short amountOfVoid = 2399;
-short score = 0;
-bool true0 = 0;
-short mytime = 0;
-short old = 1;
-bool keyEnter = 0;
+short apple = 0;			//параметры яблока
+short amountOfVoid = 0;
+short score = 0;			//очки
+bool true0 = 0;				//для цикла
+short mytime = 0;			//время
+							//
+char tlogo[] = " /@@@@@\\                   |@|               \n|@|\"\"\"|@|  Unconditional   |@|               \n \\@\\                       |@|               \n  \"@@@,  |@|/@@,   ,g@@@g, |@| ,g@@/ ,g\"\"\"g, \n     \\@\\ |@@@@@@\\ \"\"   J|@||@@@@@** /@L,,,J@\\\n|@|___|@||@@/ \\@@|/@P\"\"\"T@||@@@@@g, \\@L,___,,\n \\@@@@@/ |@|   |@|\\@L,,J\\@||@| \"*@@\\ \"*@@@*\" \n";
+char tenter[] = "Press Enter to continue\n";
+char tscore[] = "Score: ";
+char tclear[] = "                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n";
+char tnumber[] = {'0', '\0', '1', '\0', '2', '\0', '3', '\0', '4', '\0', '5', '\0', '6', '\0', '7', '\0', '8', '\0', '9', '\0'};
+char tfield[] = "                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n            @@@@                  GD              |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n                                                  |\n-------------------------------------------------- \n";
+char tsnake[] = "@@";
+char tapple[] = "GD";
+char tspace[] = "  ";
+char tn[] = "\n";
+
+bool keyEnter = 0;			//управление
 bool keyA = 0;
 bool keyD = 0;
 bool keyS = 0;
 bool keyW = 0;
+
 int main() {
-	field[19][24] = 1;
-	field[29][24] = -1;
-	srand(int(&true0));
+	srand(int(true0));
+	HANDLE consol = GetStdHandle(STD_OUTPUT_HANDLE);
 sh73:
-	keyEnter = GetAsyncKeyState(VK_RETURN);
-	keyA = GetAsyncKeyState('A');
-	keyD = GetAsyncKeyState('D');
-	keyS = GetAsyncKeyState('S');
-	keyW = GetAsyncKeyState('W');
-	mywhile(invent(keyEnter), 1, 0);
-		assignment(&true0, true, 1);
-	mywhile(true0, 2, 0);
-		mywhile(less(mytime, 20), 20, 2);
-			Sleep(50 * equals(order, 20));
-			myif(equals(direction1, 0), 200, 20);
+
+	assignment(direction[0], true, 0);								//установка по умолчанию
+	assignment(direction[1], false, 0);
+	assignment(snakeX, 7, 0);
+	assignment(snakeY, 12, 0);
+	assignment(apple, 0, 0);
+	assignment(amountOfVoid, 622, 0);
+	assignment(old, 2, 0);
+	mywhile(less(j, 25), 3, 0);
+		mywhile(less(i, 25), 30, 3);
+			assignment((field[i][j]), 0, 30);
+			assignment(i, i + 1, 30);
+		assignment(j, j + 1, 3);
+		assignment(i, 0, 3);
+	assignment(j, 0, 0);
+	assignment((field[6][12]), 1, 0);
+	assignment((field[7][12]),  2, 0);
+	assignment((field[17][12]), -1, 0);
+
+	std::cout << tclear + 1352*invent(equals(order, 0));			//вывод главного меню
+	SetConsoleCursorPosition(consol, {0, 0});
+	std::cout << tlogo + 322*invent(equals(order, 0));
+	std::cout << tscore + 7*invent(equals(order, 0));
+	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score/100))*2*equals(order, 0);
+	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score%100/10))*2*equals(order, 0);
+	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score%100%10))*2*equals(order, 0);
+	std::cout << tn + 1*invent(equals(order, 0));
+	std::cout << tenter + 24*invent(equals(order, 0));
+	SetConsoleCursorPosition(consol, {0, 0});
+
+	mywhile(invent(keyEnter), 1, 0);								//главное меню
+		assignment(true0, true, 1);
+	std::cout << tfield + 1352*invent(equals(order, 0));
+	assignment(score, 0, 0);
+	SetConsoleCursorPosition(consol, {0, 0});
+	mywhile(true0, 2, 0);											//главный цикл
+
+		mywhile(less(mytime, 100), 20, 2);							//взаимодействие с игроком
+
+			keyEnter = GetAsyncKeyState(VK_RETURN);
+			keyA = GetAsyncKeyState('A');
+			keyD = GetAsyncKeyState('D');
+			keyS = GetAsyncKeyState('S');
+			keyW = GetAsyncKeyState('W');
+	
+			myif(equals(direction[1], false), 200, 20);
 				myif(keyS, 2000, 200);
-					assignment(&direction0, false, 2000);
-					assignment(&direction1, true, 2000);
-					assignment(&mytime, 20, 2000);
-					assignment(&order, 200, 2000);
+					assignment(direction[0], false, 2000);
+					assignment(direction[1], true, 2000);
+					assignment(order, 2, 2000);
 				myif(keyW, 2001, 200);
-					assignment(&direction0, true, 2001);
-					assignment(&direction1, true, 2001);
-					assignment(&mytime, 20, 2001);
-					assignment(&order, 200, 2001);
-				assignment(&order, 20, 200);
-			myif(equals(direction1, 1), 201, 20);
+					assignment(direction[0], true, 2001);
+					assignment(direction[1], true, 2001);
+					assignment(order, 2, 2001);
+				assignment(order, 20, 200);
+			myif(equals(direction[1], true), 201, 20);
 				myif(keyA, 2010, 201);
-					assignment(&direction0, false, 2010);
-					assignment(&direction1, false, 2010);
-					assignment(&mytime, 20, 2010);
-					assignment(&order, 201, 2010);
+					assignment(direction[0], false, 2010);
+					assignment(direction[1], false, 2010);
+					assignment(order, 2, 2010);
 				myif(keyD, 2011, 201);
-					assignment(&direction0, true, 2011);
-					assignment(&direction1, false, 2011);
-					assignment(&mytime, 20, 2011);
-					assignment(&order, 201, 2011);
-				assignment(&order, 20, 201);
+					assignment(direction[0], true, 2011);
+					assignment(direction[1], false, 2011);
+					assignment(order, 2, 2011);
+				assignment(order, 20, 201);
+			assignment(mytime, mytime+1, 20);
 
-			mywhile(less(j, 49), 202, 20);
-				mywhile(less(i, 49), 2020, 202);
-					std::cout << char((short(' ') * equals(field[i][j], 0) + short('@') * equals(field[i][j], -1) + short('H') * more(field[i][j], 0)) * equals(order, 2020));
-					assignment(&i, i + 1, 2020);
-				std::cout << char((short('\n')) * equals(order, 202));
-				assignment(&j, j + 1, 202);
-				assignment(&i, 0, 202);
-			assignment(&j, 0, 20);
+		assignment(mytime, 0, 2);									//смена направления
+		assignment(snakeX, snakeX + ((-1)*invent(direction[0]) + direction[0]) * invent(direction[1]), 2);
+		assignment(snakeY, snakeY + ((-1)*direction[0] + invent(direction[0])) * direction[1], 2);
+		myminiif(equals(snakeX, -1), snakeX, snakeX+25, 2);
+		myminiif(equals(snakeX, 25), snakeX, snakeX-25, 2);
+		myminiif(equals(snakeY, -1), snakeY, snakeY+25, 2);
+		myminiif(equals(snakeY, 25), snakeY, snakeY-25, 2);
 
-			/* mywhile(less(i, 2450), 203, 20);
-			 	std::cout << char((short('\b'))*equals(order, 203));
-			 	assignment(&i, i+1, 203);
-			 assignment(&i, 0, 20);*/
+		SetConsoleCursorPosition(consol, {snakeX*2*equals(order, 2), snakeY*equals(order, 2)});
+		std::cout << tsnake + 2*invent(equals(order, 2));
+		SetConsoleCursorPosition(consol, {0, 0});
 
-			assignment(&mytime, mytime + 1, 20);
-		assignment(&mytime, 0, 2);
-		assignment(&snakeX, snakeX + direction0 * invent(direction1), 2);
-		assignment(&snakeY, snakeY + direction0 * direction1, 2);
+		assignment(apple, rand() % amountOfVoid, 2);				//перемещение змейки
+		mywhile(less(j, 25), 21, 2);
+			mywhile(less(i, 25), 210, 21);
+				myif(equals(field[snakeX][snakeY], -1), 2100, 210);	//новое яблоко
+					myif(equals(field[i][j], 0), 21000, 2100);
+						myif(equals(apple, 0), 210000, 21000);
+							assignment((field[i][j]), -1, 210000);
+							SetConsoleCursorPosition(consol, {i*2*equals(order, 210000), j*equals(order, 210000)});
+							std::cout << tapple + 2*invent(equals(order, 210000));
+							SetConsoleCursorPosition(consol, {0, 0});
+							assignment(score, score+1, 210000);
+							assignment(i, 0, 210000);
+							assignment(order, 2, 210000);
+						myminiif(invent(equals(apple, 0)), apple, apple - 1, 21000);
+						assignment(order, 2100, 21000);
+					assignment(order, 210, 2100);
+				myif(more(field[snakeX][snakeY], -1), 2101, 210);	//просто перемещение
+					myif(equals(field[i][j], 1), 21010, 2101);
+						SetConsoleCursorPosition(consol, {i*2*equals(order, 21010), j*equals(order, 21010)});
+						std::cout << tspace + 2*invent(equals(order, 21010));
+						SetConsoleCursorPosition(consol, {0, 0});
+						assignment(order, 2101, 21010);					
+					myminiif(more(field[i][j], 0), (field[i][j]), field[i][j] - 1, 2101);
+					assignment(order, 210, 2101);
+				assignment(i, i + 1, 210);
+			assignment(j, j + 1, 21);
+			assignment(i, 0, 21);
+		assignment(j, 0, 2);
 
-		assignment(more(field[snakeX][snakeY], 0), &true0, false, 2);
-
-	    myif(equals(field[snakeX][snakeY], 0), 21, 2);
-	        mywhile(less(j, 49), 210, 21);
-	            mywhile(less(i, 49), 2100, 210);
-	                assignment(more(field[i][j], 0), &(field[i][j]), field[i][j] - 1, 2100);
-	                assignment(&i, i + 1, 2100);
-	            assignment(&j, j + 1, 210);
-	            assignment(&i, 0, 210);
-	        assignment(&j, 0, 21);
-	        assignment(&(field[snakeX][snakeY]), old, 21);
-	        assignment(&order, 2, 21);
-
-	    myif(equals(field[snakeX][snakeY], -1), 22, 2);
-	        assignment(&apple, rand() % amountOfVoid, 22);
-	        mywhile(less(j, 49), 220, 22);
-	            mywhile(less(i, 49), 2200, 220);
-	                myif(equals(field[i][j], 0), 22000, 2200);
-	                    myif(equals(apple, 0), 220000, 22000);
-	                        assignment(&(field[i][j]), -1, 220000);
-	                        assignment(&i, 48, 220000);
-                            assignment(&j, 48, 220000);
-                            assignment(&order, 22000, 220000);
-	                    assignment(invent(equals(apple, 0)), &apple, apple - 1, 22000);
-	                    assignment(&order, 2200, 22000);
-	                assignment(&i, i + 1, 2200);
-	            assignment(&j, j + 1, 220);
-	            assignment(&i, 0, 220);
-	        assignment(&j, 0, 22);
-	        assignment(&amountOfVoid, amountOfVoid - 1, 22);
-            assignment(&old, old + 1, 22);
-            assignment(&(field[snakeX][snakeY]), old, 22);
-            assignment(&order, 2, 22);
-	assignment(&snakeX, 19, 0);
-	assignment(&snakeY, 24, 0);
-	assignment(&direction0, true, 0);
-	assignment(&direction1, false, 0);
-	assignment(&apple, 0, 0);
-	assignment(&amountOfVoid, 2399, 0);
-	assignment(&old, 1, 0);
+		myminiif(more(field[snakeX][snakeY], 0), true0, false, 2);
+		myminiif(equals(field[snakeX][snakeY], 0), (field[snakeX][snakeY]), old, 2);
+		myif(equals(field[snakeX][snakeY], -1), 22, 2);
+			assignment(apple, 0, 22);
+			assignment(amountOfVoid, amountOfVoid - 1, 22);
+			assignment(old, old + 1, 22);
+			assignment((field[snakeX][snakeY]), old, 22);
+			assignment(order, 2, 22);
+		SetConsoleCursorPosition(consol, {snakeX*2*equals(order, 2), snakeY*equals(order, 2)});
+		std::cout << tsnake + 2*invent(equals(order, 2));
+		SetConsoleCursorPosition(consol, {0, 0});
 
 	goto sh73;
 }
