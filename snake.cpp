@@ -1,39 +1,43 @@
 #include <iostream>
 #include <windows.h>
 
-bool invent(bool a) {                       //инвентирование
-	return (a*-1+1);
+const int INT_MASK = (int(1) << (sizeof(int) * 8 - 1));
+
+bool invert(bool a)							//inversion
+{
+	return a-1;
 }
-bool myor(bool a, bool b) {                 //или
-	return invent(invent(a) * invent(b));
+bool or(bool a, bool b)						//or
+{ 
+	return a+b;
 }
-bool check_zero(int a) {                  	//проверка на ноль
-	return int((a*a+1)/1) * int(1/(a*a+1));
+bool equals(int a, int b)					//=
+{
+	return a-b;
 }
-bool equals(int a, int b) {             	//проверка на равенство
-	return int((a+(a*a+b*b+1))/(b+(a*a+b*b+1))) * int((b+(a*a+b*b+1))/(a+(a*a+b*b+1)));
+bool more(int a, int b)						//>
+{
+	return (b-a)|INT_MASK;
 }
-bool more(int a, int b) {               	//проверка на больше, в случае равенства возвращает 0
-	return check_zero(int((b+(a*a+b*b+1))/(a+(a*a+b*b+1))));
-}
-bool less(int a, int b) {               	//проверка на меньше, в случае равенства возвращает 0
-	return check_zero(int((a+(a*a+b*b+1))/(b+(a*a+b*b+1))));
+bool less(int a, int b)						//<
+{
+	return (a-b)|INT_MASK; 
 }
 int order = 0;				//этап цикла
 
 template <typename Y, typename Z>
 void assignment(Y &a, Z b, int c) {			//присваивание нового значения переменной A, значения B, во время этапа C
-	a = (a * (invent(equals(order, c)))) + (b * equals(order, c));
+	a = (a * (invert(equals(order, c)))) + (b * equals(order, c));
 }
 void mywhile(bool a, int b, int c) {		//цикл, который итерируется пока A правда, этап цикла B, во время этапа C
-	order = (order * invent(myor(equals(order, b), equals(order, c)))) + ((b * a + c * invent(a)) * myor(equals(order, b), equals(order, c)));
+	order = (order * invert(myor(equals(order, b), equals(order, c)))) + ((b * a + c * invert(a)) * myor(equals(order, b), equals(order, c)));
 }
 void myif(bool a, int b, int c) {			//условие, которое срабатывает если A правда, этап условия B, во время этапа C
-	order = (order * invent(equals(order, c))) + ((b * a + c * invent(a)) * equals(order, c));
+	order = (order * invert(equals(order, c))) + ((b * a + c * invert(a)) * equals(order, c));
 }
 template <typename Y, typename Z>
 void myminiif(bool a, Y &b, Z c, int d) {	//присваивание нового значения переменной B, значения C, если A правда, во время этапа D
-	assignment(b, invent(a) * b + a * c, d);
+	assignment(b, invert(a) * b + a * c, d);
 }
 short field[25][25] = {};	//поле
 short snakeX = 0;			//голова змеи
@@ -48,7 +52,14 @@ short score = 0;			//очки
 bool true0 = 0;				//для цикла
 short mytime = 0;			//время
 							//
-char tlogo[] = " /@@@@@\\                   |@|               \n|@|\"\"\"|@|  Unconditional   |@|               \n \\@\\                       |@|               \n  \"@@@,  |@|/@@,   ,g@@@g, |@| ,g@@/ ,g\"\"\"g, \n     \\@\\ |@@@@@@\\ \"\"   J|@||@@@@@** /@L,,,J@\\\n|@|___|@||@@/ \\@@|/@P\"\"\"T@||@@@@@g, \\@L,___,,\n \\@@@@@/ |@|   |@|\\@L,,J\\@||@| \"*@@\\ \"*@@@*\" \n";
+char logoSnake[] =							//logo in menu
+R"rav( /@@@@@\                   |@|               
+|@|"""|@|  Unconditional   |@|               
+ \@\                       |@|               
+  "@@@,  |@|/@@,   ,g@@@g, |@| ,g@@/ ,g"""g, 
+     \@\ |@@@@@@\ ""   J|@||@@@@@** /@L,,,J@\
+|@|___|@||@@/ \@@|/@P"""T@||@@@@@g, \@L,___,,
+ \@@@@@/ |@|   |@|\@L,,J\@||@| "*@@\ "*@@@*" )rav";
 char tenter[] = "Press Enter to continue\n";
 char tscore[] = "Score: ";
 char tclear[] = "                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n                                                   \n";
@@ -88,20 +99,20 @@ sh73:
 	assignment((field[7][12]),  2, 0);
 	assignment((field[17][12]), -1, 0);
 
-	std::cout << tclear + 1352*invent(equals(order, 0));			//вывод главного меню
+	std::cout << tclear + 1352*invert(equals(order, 0));			//вывод главного меню
 	SetConsoleCursorPosition(consol, {0, 0});
-	std::cout << tlogo + 322*invent(equals(order, 0));
-	std::cout << tscore + 7*invent(equals(order, 0));
-	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score/100))*2*equals(order, 0);
-	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score%100/10))*2*equals(order, 0);
-	std::cout << tnumber + 19*invent(equals(order, 0)) + (short(score%100%10))*2*equals(order, 0);
-	std::cout << tn + 1*invent(equals(order, 0));
-	std::cout << tenter + 24*invent(equals(order, 0));
+	std::cout << tlogo + 322*invert(equals(order, 0));
+	std::cout << tscore + 7*invert(equals(order, 0));
+	std::cout << tnumber + 19*invert(equals(order, 0)) + (short(score/100))*2*equals(order, 0);
+	std::cout << tnumber + 19*invert(equals(order, 0)) + (short(score%100/10))*2*equals(order, 0);
+	std::cout << tnumber + 19*invert(equals(order, 0)) + (short(score%100%10))*2*equals(order, 0);
+	std::cout << tn + 1*invert(equals(order, 0));
+	std::cout << tenter + 24*invert(equals(order, 0));
 	SetConsoleCursorPosition(consol, {0, 0});
 
-	mywhile(invent(keyEnter), 1, 0);								//главное меню
+	mywhile(invert(keyEnter), 1, 0);								//главное меню
 		assignment(true0, true, 1);
-	std::cout << tfield + 1352*invent(equals(order, 0));
+	std::cout << tfield + 1352*invert(equals(order, 0));
 	assignment(score, 0, 0);
 	SetConsoleCursorPosition(consol, {0, 0});
 	mywhile(true0, 2, 0);											//главный цикл
@@ -137,15 +148,15 @@ sh73:
 			assignment(mytime, mytime+1, 20);
 
 		assignment(mytime, 0, 2);									//смена направления
-		assignment(snakeX, snakeX + ((-1)*invent(direction[0]) + direction[0]) * invent(direction[1]), 2);
-		assignment(snakeY, snakeY + ((-1)*direction[0] + invent(direction[0])) * direction[1], 2);
+		assignment(snakeX, snakeX + ((-1)*invert(direction[0]) + direction[0]) * invert(direction[1]), 2);
+		assignment(snakeY, snakeY + ((-1)*direction[0] + invert(direction[0])) * direction[1], 2);
 		myminiif(equals(snakeX, -1), snakeX, snakeX+25, 2);
 		myminiif(equals(snakeX, 25), snakeX, snakeX-25, 2);
 		myminiif(equals(snakeY, -1), snakeY, snakeY+25, 2);
 		myminiif(equals(snakeY, 25), snakeY, snakeY-25, 2);
 
 		SetConsoleCursorPosition(consol, {snakeX*2*equals(order, 2), snakeY*equals(order, 2)});
-		std::cout << tsnake + 2*invent(equals(order, 2));
+		std::cout << tsnake + 2*invert(equals(order, 2));
 		SetConsoleCursorPosition(consol, {0, 0});
 
 		assignment(apple, rand() % amountOfVoid, 2);				//перемещение змейки
@@ -156,18 +167,18 @@ sh73:
 						myif(equals(apple, 0), 210000, 21000);
 							assignment((field[i][j]), -1, 210000);
 							SetConsoleCursorPosition(consol, {i*2*equals(order, 210000), j*equals(order, 210000)});
-							std::cout << tapple + 2*invent(equals(order, 210000));
+							std::cout << tapple + 2*invert(equals(order, 210000));
 							SetConsoleCursorPosition(consol, {0, 0});
 							assignment(score, score+1, 210000);
 							assignment(i, 0, 210000);
 							assignment(order, 2, 210000);
-						myminiif(invent(equals(apple, 0)), apple, apple - 1, 21000);
+						myminiif(invert(equals(apple, 0)), apple, apple - 1, 21000);
 						assignment(order, 2100, 21000);
 					assignment(order, 210, 2100);
 				myif(more(field[snakeX][snakeY], -1), 2101, 210);	//просто перемещение
 					myif(equals(field[i][j], 1), 21010, 2101);
 						SetConsoleCursorPosition(consol, {i*2*equals(order, 21010), j*equals(order, 21010)});
-						std::cout << tspace + 2*invent(equals(order, 21010));
+						std::cout << tspace + 2*invert(equals(order, 21010));
 						SetConsoleCursorPosition(consol, {0, 0});
 						assignment(order, 2101, 21010);					
 					myminiif(more(field[i][j], 0), (field[i][j]), field[i][j] - 1, 2101);
@@ -186,7 +197,7 @@ sh73:
 			assignment((field[snakeX][snakeY]), old, 22);
 			assignment(order, 2, 22);
 		SetConsoleCursorPosition(consol, {snakeX*2*equals(order, 2), snakeY*equals(order, 2)});
-		std::cout << tsnake + 2*invent(equals(order, 2));
+		std::cout << tsnake + 2*invert(equals(order, 2));
 		SetConsoleCursorPosition(consol, {0, 0});
 
 	goto sh73;
